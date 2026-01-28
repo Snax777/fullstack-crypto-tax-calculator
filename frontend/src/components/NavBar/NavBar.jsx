@@ -7,8 +7,6 @@ const NavBar = () => {
       <header>
         <Logo />
         <NavLinks>
-          <NavLik href='#'>Calculators</NavLik>
-          <NavLik href='#'>Blog</NavLik>
           <NavLik href='#'>Help</NavLik>
           <NavLik href='#'>Login</NavLik>
         </NavLinks>
