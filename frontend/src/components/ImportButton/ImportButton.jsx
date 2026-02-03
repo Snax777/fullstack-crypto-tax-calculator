@@ -1,12 +1,14 @@
+import { useState } from 'react';
 import React from 'react'
 import { FaDownload } from 'react-icons/fa';
 import styled from 'styled-components';
-
+import ImportModal from '../Modal/Modal';
 
 const ImportButton = () => {
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <Container className='import-section'>
-      <button className='btn-import-large' onclick='openImportModal()'>
+      <button className='btn-import-large' onClick={() => setIsOpen(true)}>
         <div className='import-icon'>
           <FaDownload />
         </div>
@@ -17,6 +19,7 @@ const ImportButton = () => {
           </div>
         </div>
       </button>
+      <ImportModal isOpen={isOpen} onClose={() => setIsOpen(false)} />
     </Container>
   );
 };
