@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import ImportModal from '../Modal/Modal';
 
 const ImportButton = () => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
   return (
     <Container className='import-section'>
       <button className='btn-import-large' onClick={() => setIsOpen(true)}>
