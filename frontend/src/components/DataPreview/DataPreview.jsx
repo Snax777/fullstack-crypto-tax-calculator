@@ -1,4 +1,4 @@
-import { FaArrowRight, FaExchangeAlt } from "react-icons/fa";
+import { FaArrowRight, FaExchangeAlt, FaArrowDown, FaArrowUp } from "react-icons/fa";
 import { 
   PreviewSection, PreviewHeader, PreviewTable, 
   TypeBadge, CoinBadge 
@@ -7,8 +7,10 @@ import { isStablecoin } from "../../utils/cryptoUtils";
 
 const getTypeIcon = (type) => {
   switch(type) {
-    case 'Buy': return '💰';
-    case 'Sell': return '💸';
+    case 'Buy': 
+      return <FaArrowDown style={{ fontSize: '0.8rem', color: '#10b981' }} />;
+    case 'Sell': 
+      return <FaArrowUp style={{ fontSize: '0.8rem', color: '#ef4444' }} />;
     case 'Trade': return <FaExchangeAlt style={{ fontSize: '0.8rem' }} />;
     case 'Transfer': return <FaArrowRight style={{ fontSize: '0.8rem' }} />;
     default: return '';

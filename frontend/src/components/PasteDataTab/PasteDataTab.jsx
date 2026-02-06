@@ -1,4 +1,4 @@
-import { FaCheckCircle } from "react-icons/fa";
+import { FaCheckCircle, FaFile } from "react-icons/fa";
 import { InfoBox } from "../MessageBoxes/MessageBoxes.jsx";
 import { SampleButton, Textarea } from "../ImportModal.styles";
 
@@ -20,7 +20,7 @@ export default function PasteDataTab({ pastedData, setPastedData }) {
       </InfoBox>
 
       <SampleButton onClick={() => setPastedData(sampleCSVData)}>
-        📋 Use Sample Data
+        <FaFile/> Use Sample Data
       </SampleButton>
 
       <label>Transaction Data (Tab or Comma Separated)</label>

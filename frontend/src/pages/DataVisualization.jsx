@@ -2,7 +2,8 @@ import { useState } from "react";
 import { 
   FaChartLine, FaCoins, FaCalculator, FaDownload, 
   FaExpand, FaCompress, FaFilter, FaCog,
-  FaArrowUp, FaArrowDown, FaMinus, FaHome
+  FaArrowUp, FaArrowDown, FaMinus, FaHome,
+  FaChevronDown, FaChevronUp
 } from "react-icons/fa";
 import styled from "styled-components";
 import { getTaxYear } from "../utils/taxCalculations.js";
@@ -215,7 +216,7 @@ export default function DataVisualization({ data, onBack }) {
                       </CapitalGain>
                     )}
                     <ExpandIcon expanded={expandedTransactions.has(index)}>
-                      ▼
+                      {expandedTransactions.has(index) ? <FaChevronUp /> : <FaChevronDown />}
                     </ExpandIcon>
                   </TransactionSummary>
                 </TransactionHeader>

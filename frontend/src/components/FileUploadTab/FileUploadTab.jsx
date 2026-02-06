@@ -1,4 +1,4 @@
-import { FaFile, FaUpload, FaFileCsv, FaFileExcel, FaFileAlt, FaCheckCircle } from "react-icons/fa";
+import { FaFile, FaUpload, FaFileCsv, FaFileExcel, FaFileAlt, FaCheckCircle, FaTimes } from "react-icons/fa";
 import { InfoBox } from "../MessageBoxes/MessageBoxes.jsx";
 import { 
   FileFormats, FileFormat, UploadZone, UploadIcon, 
@@ -75,8 +75,13 @@ export default function FileUploadTab({ files, setFiles, setShowPreview }) {
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <FileStatus ready>✓ Ready</FileStatus>
-                <RemoveButton onClick={() => handleRemoveFile(i)}>✕</RemoveButton>
+                <FileStatus ready>
+                  <FaCheckCircle style={{ marginRight: "0.25rem" }} />
+                  Ready
+                </FileStatus>
+                <RemoveButton onClick={() => handleRemoveFile(i)}>
+                  <FaTimes />
+                </RemoveButton>
               </div>
             </FileItem>
           ))}

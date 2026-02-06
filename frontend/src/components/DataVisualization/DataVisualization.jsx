@@ -15,6 +15,7 @@ import {
   FaExclamationTriangle,
   FaCheckCircle,
   FaWallet,
+  FaTimes,
 } from "react-icons/fa";
 import { SiPolygon, SiSolana } from "react-icons/si";
 
@@ -349,7 +350,9 @@ export default function ImportModal({ isOpen, onClose, onDataProcessed }) {
             <h2>Import Your Crypto Transaction Data</h2>
             <p>Calculate capital gains using SARS-compliant FIFO method</p>
           </div>
-          <Close onClick={onClose}>✕</Close>
+          <Close onClick={onClose}>
+            <FaTimes />
+          </Close>
         </Header>
 
         <Body>
@@ -440,8 +443,13 @@ export default function ImportModal({ isOpen, onClose, onDataProcessed }) {
                       </div>
 
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <FileStatus ready>✓ Ready</FileStatus>
-                        <RemoveButton onClick={() => handleRemoveFile(i)}>✕</RemoveButton>
+                        <FileStatus ready>
+                          <FaCheckCircle style={{ marginRight: "0.25rem" }} />
+                          Ready
+                        </FileStatus>
+                        <RemoveButton onClick={() => handleRemoveFile(i)}>
+                          <FaTimes />
+                        </RemoveButton>
                       </div>
                     </FileItem>
                   ))}
@@ -535,7 +543,9 @@ export default function ImportModal({ isOpen, onClose, onDataProcessed }) {
                         <br />
                         <small>{w.address}</small>
                       </div>
-                      <RemoveButton onClick={() => handleRemoveWallet(i)}>✕</RemoveButton>
+                      <RemoveButton onClick={() => handleRemoveWallet(i)}>
+                        <FaTimes />
+                      </RemoveButton>
                     </WalletItem>
                   ))}
                 </FileList>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FaCalculator, FaEye } from "react-icons/fa";
+import { FaCalculator, FaEye, FaUpload, FaPaste, FaLink, FaTimes } from "react-icons/fa";
 import { 
   Modal, Backdrop, Content, Header, Close, Body, Footer, 
   Secondary, Primary, Tabs, Tab 
@@ -261,20 +261,41 @@ export default function ImportModal({ isOpen, onClose, onDataProcessed }) {
             <h2>Import Your Crypto Transaction Data</h2>
             <p>SARS-compliant FIFO calculation for South African tax returns</p>
           </div>
-          <Close onClick={onClose}>✕</Close>
+          <Close onClick={onClose}>
+            <FaTimes />
+          </Close>
         </Header>
 
         <Body>
           <Tabs>
             {Object.values(TABS).map((tab) => (
-              <Tab key={tab} active={activeTab === tab} onClick={() => {
-                setActiveTab(tab);
-                setShowPreview(false);
-                setValidationErrors([]);
-              }}>
-                {tab === "file" && "📁 Upload File"}
-                {tab === "paste" && "📋 Paste Data"}
-                {tab === "wallet" && "🔗 Connect Wallet"}
+              <Tab
+                key={tab}
+                active={activeTab === tab}
+                onClick={() => {
+                  setActiveTab(tab);
+                  setShowPreview(false);
+                  setValidationErrors([]);
+                }}
+              >
+                {tab === "file" && (
+                  <>
+                    <FaUpload style={{ marginRight: "0.5rem" }} />
+                    Upload File
+                  </>
+                )}
+                {tab === "paste" && (
+                  <>
+                    <FaPaste style={{ marginRight: "0.5rem" }} />
+                    Paste Data
+                  </>
+                )}
+                {tab === "wallet" && (
+                  <>
+                    <FaLink style={{ marginRight: "0.5rem" }} />
+                    Connect Wallet
+                  </>
+                )}
               </Tab>
             ))}
           </Tabs>

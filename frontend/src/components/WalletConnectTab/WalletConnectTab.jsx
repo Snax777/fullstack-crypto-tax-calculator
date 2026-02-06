@@ -1,4 +1,4 @@
-import { FaBitcoin, FaEthereum, FaCheckCircle } from "react-icons/fa";
+import { FaBitcoin, FaEthereum, FaCheckCircle, FaTimes } from "react-icons/fa";
 import { SiPolygon, SiSolana } from "react-icons/si";
 import { InfoBox } from "../MessageBoxes/MessageBoxes.jsx";
 import {
@@ -98,7 +98,9 @@ export default function WalletConnectTab({
                 <br />
                 <small>{w.address}</small>
               </div>
-              <RemoveButton onClick={() => handleRemoveWallet(i)}>✕</RemoveButton>
+              <RemoveButton onClick={() => handleRemoveWallet(i)}>
+                <FaTimes />
+              </RemoveButton>
             </WalletItem>
           ))}
         </FileList>
