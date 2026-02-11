@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('wallets_transactions', function (Blueprint $table) {
+        Schema::create('wallet_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('wallet_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['buy', 'sell', 'transfer']);
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('wallets_transactions');
+        Schema::dropIfExists('wallet_transactions');
     }
 };

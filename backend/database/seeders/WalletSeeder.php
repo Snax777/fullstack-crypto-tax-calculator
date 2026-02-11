@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Wallet;
-use App\Models\Transaction;
+use App\Models\WalletTransaction;
 use Illuminate\Database\Seeder;
 use Carbon\Carbon;
 
