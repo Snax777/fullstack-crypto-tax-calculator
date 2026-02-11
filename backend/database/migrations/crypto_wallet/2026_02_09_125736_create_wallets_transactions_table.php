@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('wallet_id')->constrained()->onDelete('cascade');
             $table->enum('type', ['buy', 'sell', 'transfer']);
             $table->decimal('amount', 18, 8);
-            $table->decimal('price_at_time', 12, 2)->nullable();  // USD price when traded
+            $table->decimal('price_at_open', 12, 2)->nullable();  // ZAR price when trade is made
+            $table->decimal('price_at_close', 12, 2)->nullable();  // ZAR price when trade is complete
             $table->timestamp('transaction_date');
             $table->timestamps();
         });
