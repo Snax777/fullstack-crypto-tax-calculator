@@ -51,7 +51,7 @@ class Wallet extends Model
     }
 
     // Determines how much tax an individual should pay
-    public function calculateIncomeTax($year) {
+    public function calculateIncomeTaxBracket($year) {
         $isTaxEligible = $this->isSarsTaxEligible($year);
 
         if ($isTaxEligible) {
