@@ -1,59 +1,293 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Crypto Tax Calculator - Backend Documentation
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Installation
 
-## About Laravel
+### 1. Requirements
+- PHP 8.2+
+- Composer
+- SQLite
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 2. Install Dependencies
+```bash
+cd backend
+composer install
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 3. Setup Environment
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 4. Configure Database
+Edit `.env`:
+```
+DB_CONNECTION=sqlite
+```
 
-## Learning Laravel
+Create database:
+```bash
+touch database/database.sqlite
+php artisan migrate
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 5. Start Server
+```bash
+php artisan serve
+```
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Server runs at: `http://localhost:8000`
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## API Endpoints
 
-### Premium Partners
+Base URL: `http://localhost:8000/api`
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Import Transactions
 
-## Contributing
+#### Upload File (CSV/Excel)
+```
+POST /api/transactions/upload
+Content-Type: multipart/form-data
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Request:**
+- `file`: CSV or Excel file (.csv, .txt, .xlsx, .xls)
 
-## Code of Conduct
+**Example:**
+```bash
+curl -X POST http://localhost:8000/api/transactions/upload \
+  -F "file=@transactions.csv"
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**CSV Format:**
+```csv
+date,type,coin,quantity,price_zar,fee
+2023-03-15,BUY,BTC,0.5,400000,50
+2023-06-15,SELL,BTC,0.3,450000,25
+```
 
-## Security Vulnerabilities
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Imported 8 transactions successfully",
+  "data": {
+    "session_id": "calc-abc123",
+    "count": 8,
+    "errors": []
+  }
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+#### Paste Transactions
+```
+POST /api/transactions/paste
+Content-Type: application/json
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+**Request:**
+```json
+{
+  "text": "date,type,coin,quantity,price_zar,fee\n2023-03-15,BUY,BTC,0.5,400000,50"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Imported 3 transactions successfully",
+  "data": {
+    "session_id": "calc-def456",
+    "count": 3,
+    "errors": []
+  }
+}
+```
+
+---
+
+### Calculate Tax
+
+#### Get Tax Calculation (By Tax Year)
+```
+POST /api/calculate
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "session_id": "calc-abc123"
+}
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": {
+    "session_id": "calc-abc123",
+    "overall_summary": {
+      "total_years": 2,
+      "total_transactions": 15,
+      "total_capital_gain_all_years": 99700,
+      "total_taxable_all_years": 3940
+    },
+    "tax_years": [
+      {
+        "tax_year": 2024,
+        "period": "2024-03-01 to 2025-02-28",
+        "status": "current",
+        "total_gain": 49850,
+        "fifo_calculation": {
+          "total_capital_gain": 49850,
+          "annual_exclusion_applied": 40000,
+          "net_capital_gain": 9850,
+          "taxable_capital_gain": 3940
+        },
+        "coins": [...]
+      }
+    ]
+  }
+}
+```
+
+---
+
+#### Download PDF Report
+```
+POST /api/calculate/download-pdf
+Content-Type: application/json
+```
+
+**Request:**
+```json
+{
+  "session_id": "calc-abc123"
+}
+```
+
+**Response:** PDF file download
+
+**Example:**
+```bash
+curl -X POST http://localhost:8000/api/calculate/download-pdf \
+  -H "Content-Type: application/json" \
+  -d '{"session_id":"calc-abc123"}' \
+  --output report.pdf
+```
+
+---
+
+### View Transactions
+
+#### Get All Transactions
+```
+GET /api/transactions?session_id=calc-abc123
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": [...],
+  "count": 8
+}
+```
+
+---
+
+#### Get Transactions by Tax Year
+```
+GET /api/transactions/by-tax-year?session_id=calc-abc123
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "data": [
+    {
+      "tax_year": 2024,
+      "period": "2024-03-01 to 2025-02-28",
+      "transactions": [...],
+      "count": 5
+    }
+  ],
+  "total_tax_years": 2
+}
+```
+
+---
+
+#### Get Session Transactions
+```
+GET /api/transactions/session/{sessionId}
+```
+
+**Example:**
+```
+GET /api/transactions/session/calc-abc123
+```
+
+---
+
+### Delete Transactions
+
+#### Delete Session
+```
+DELETE /api/transactions/session/{sessionId}
+```
+
+**Example:**
+```bash
+curl -X DELETE http://localhost:8000/api/transactions/session/calc-abc123
+```
+
+**Response:**
+```json
+{
+  "status": "success",
+  "message": "Deleted 8 transactions"
+}
+```
+
+---
+
+## Tax Calculation Details
+
+### South African Tax Rules
+
+- **Tax Year:** March 1 - February 28/29
+- **Annual Exclusion:** R40,000 per tax year
+- **Inclusion Rate:** 40% (only 40% of net gain is taxable)
+- **Method:** FIFO (First-In-First-Out)
+
+### Calculation Steps
+
+1. Group transactions by tax year
+2. Calculate capital gains using FIFO method
+3. Apply R40,000 annual exclusion per year
+4. Apply 40% inclusion rate
+5. Result = taxable amount to add to income
+
+
+## Column Name Variations
+
+The importer recognizes these column names:
+
+| Field | Accepted Names |
+|-------|---------------|
+| date | date, transaction_date, Date, DATE |
+| type | type, transaction_type, Type, TYPE |
+| coin | coin, asset, cryptocurrency, Asset, symbol |
+| quantity | quantity, amount, qty, Volume |
+| price_zar | price_zar, price, Price, rate |
+| fee | fee, fees, commission, Fee |
+
+---

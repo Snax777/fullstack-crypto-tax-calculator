@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\TransactionController;
 use App\Http\Controllers\Api\TransactionUploadController;
 use App\Services\FIFOCalculatorService;
+use App\Services\PdfReportService;
 use App\Services\TaxCalculatorService;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
@@ -15,7 +16,7 @@ use Illuminate\Http\Request;
 
 Route::post('transactions/upload', [TransactionUploadController::class, 'upload']);
 
-Route::get('transactions/by-tax-year', [TransactionController::class, 'getTransactionsByTaxYear']);
+Route::get('transactions/by-tax-year/{sessionId}', [TransactionController::class, 'getTransactionsByTaxYear']);
 
 Route::get('transactions/session/{sessionId}', [TransactionUploadController::class, 'getSessionTransactions']);
 Route::delete('transactions/session/{sessionId}', [TransactionUploadController::class, 'deleteSession']);
@@ -77,6 +78,37 @@ Route::post('/calculate/simple', function (
       'status' => 'success',
       'data' => $taxResults
     ]);
+  } catch (\Exception $e) {
+    return response()->json([
+      'status' => 'fail',
+      'message' => $e->getMessage()
+    ], 400);
+  }
+});
+
+/**
+ * Download PDF report for tax calculations
+ */
+Route::post('/calculate/download-pdf', function (
+  Request $request,
+  FIFOCalculatorService $fifoCalc,
+  TaxCalculatorService $taxCalc,
+  PdfReportService $pdfService
+) {
+  $request->validate([
+    'session_id' => 'required|string'
+  ]);
+
+  try {
+    $fifoResults = $fifoCalc->calculateByTaxYear($request->session_id);
+
+    $taxResults = $taxCalc->calculateTaxByYear($fifoResults);
+
+    $pdf = $pdfService->generateTaxReport($taxResults);
+
+    $filename = 'crypto-tax-report-' . $request->session_id . '.pdf';
+
+    return $pdf->download($filename);
   } catch (\Exception $e) {
     return response()->json([
       'status' => 'fail',
