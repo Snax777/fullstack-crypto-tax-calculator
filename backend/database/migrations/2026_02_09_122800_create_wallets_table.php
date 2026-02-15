@@ -12,13 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('wallets', function (Blueprint $table) {
-            $table->id();  // Auto-incrementing ID
-            $table->string('name');  // Wallet name (like "My Bitcoin Wallet")
-            $table->string('address')->unique();  // Mock wallet address
-            $table->string('crypto_type');  // BTC, ETH, etc.
-            $table->decimal('balance', 18, 8)->default(0);  // Crypto balance
-            $table->timestamps();  // created_at and updated_at columns
-        }); // Creates `wallets` database table
+            $table->id();
+            $table->string('name');
+            $table->string('address')->nullable();
+            $table->timestamps();
+        });
     }
 
     /**

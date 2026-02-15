@@ -1,59 +1,147 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SARS Crypto Tax Calculator API Documentation (Multi-Wallet functionality)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This is a complete guide to the Laravel backend for your demo cryptocurrency tax calculator. It follows South African Revenue Service (SARS) rules: FIFO (First In, First Out) method for capital gains, R40,000 annual exclusion, 40% inclusion rate, and estimated additional tax based on 2025/2026 brackets.
 
-## About Laravel
+The API is built for a React frontend. All endpoints are under `/api` and return JSON (except PDF export).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Ensure you run the following commands:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```bash
+cd backend;
+composer install; // installs the necessary packages
+php artisan migrate --path=./database/migrations/2026_02_09_125736_create_wallets_transactions_table.php
+--path=./database/migrations/2026_02_09_122800_create_wallets_table.php --seed; // Migrates the two database tables and fills them with fake wallet and transactions data for demonstrating the tax report functionality which is included as well
+```
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Quick Start
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+1. **Run the server**
+   ```bash
+   php artisan serve
+   ```
+   Default URL: http://127.0.0.1:8000
 
-## Laravel Sponsors
+2. **Clear caches if needed**
+   ```bash
+   php artisan view:clear
+   php artisan cache:clear
+   php artisan config:clear
+   ```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## Key Features
 
-### Premium Partners
+- **Wallets**: Every wallet needs a unique address (required).
+- **Demo mode**: If the address contains "demo" (anywhere, case-insensitive), the wallet automatically gets 30–80 random realistic transactions.
+- **Multi-wallet support**: Tax reports combine any number of wallets into one aggregated calculation.
+- **Tax calculation**: FIFO across all selected wallets, SARS-compliant, with estimated extra tax based on your other income.
+- **Outputs**: JSON report or branded PDF (with TaxTim-style logo and highlighted key figures).
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+## API Endpoints
 
-## Contributing
+| Method | Endpoint                          | Description                                      | Required Payload                                      | Example curl Command                                                                                   | Response |
+|--------|-----------------------------------|--------------------------------------------------|-------------------------------------------------------|--------------------------------------------------------------------------------------------------------|----------|
+| GET    | `/api/wallets`                    | List all wallets                                 | None                                                  | `curl http://127.0.0.1:8000/api/wallets`                                                                | JSON array of wallets with ID, name, address, transaction count |
+| POST   | `/api/wallets`                    | Create a new wallet                              | `name` (string), `address` (string, unique)           | `curl -X POST http://127.0.0.1:8000/api/wallets -H "Content-Type: application/json" -d '{"name":"My Demo Wallet","address":"demo-1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa"}'` | Created wallet JSON (201) |
+| GET    | `/api/wallets/{id}/transactions`  | Get all transactions for a wallet                | None (use wallet ID from list)                        | `curl http://127.0.0.1:8000/api/wallets/1/transactions`                                                 | JSON array of transactions (ordered newest first) |
+| POST   | `/api/tax/calculate`              | Calculate tax report (JSON)                      | `wallet_ids` (array), `tax_year` (integer), optional `other_income` (number) | `curl -X POST http://127.0.0.1:8000/api/tax/calculate -H "Content-Type: application/json" -d '{"wallet_ids":[1,2],"tax_year":2025,"other_income":400000}'` | Full JSON tax report |
+| POST   | `/api/tax/export-pdf`             | Download PDF tax report                          | Same as calculate                                     | `curl -X POST http://127.0.0.1:8000/api/tax/export-pdf -H "Content-Type: application/json" -d '{"wallet_ids":[1],"tax_year":2025}' --output report.pdf` | PDF file download |
+| POST   | `/api/tax/preview`                | View HTML version of report (for debugging)      | Same as calculate                                     | Open in browser or curl to see raw HTML                                                                | HTML page |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Creating Wallets
 
-## Code of Conduct
+- Address is **required** and must be unique.
+- If the address contains "demo", random demo transactions are added automatically.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**Demo wallet example** (gets random data):
+```json
+{
+  "name": "Demo Portfolio",
+  "address": "demo-bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh"
+}
+```
 
-## Security Vulnerabilities
+**Real/empty wallet example** (no auto-data):
+```json
+{
+  "name": "My Binance Wallet",
+  "address": "bc1qrealwalletaddress1234567890"
+}
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## Retrieving Transactions
 
-## License
+1. List wallets → get the ID.
+2. GET `/api/wallets/{id}/transactions`
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Returns full details: date, type (buy/sell), asset, quantity, prices, fees, etc.
+
+## Generating Tax Reports
+
+Use the same payload for JSON, PDF, or preview.
+
+**Payload fields**
+- `wallet_ids`: Array of wallet IDs (1 or many → aggregates everything)
+- `tax_year`: e.g. 2025 (SARS year runs 1 March previous year to end Feb)
+- `other_income`: Optional — your other taxable income (R0 if none). Used to show exact marginal tax rate and extra tax you'll pay on the crypto gain.
+
+**Report includes**
+- Net capital gain
+- After R40,000 exclusion
+- Amount added to taxable income (40%)
+- Estimated additional tax you'll actually pay (highlighted)
+- Marginal tax rate
+- Full disposal list
+- Detailed FIFO breakdown for every sale
+
+## Connecting to a React Frontend (Axios Examples)
+
+Install Axios in React:
+```bash
+npm install axios
+```
+
+**Example React hooks**
+
+```javascript
+import axios from 'axios';
+const API = 'http://127.0.0.1:8000/api';
+
+// List wallets
+const { data: wallets } = await axios.get(`${API}/wallets`);
+
+// Create demo wallet
+await axios.post(`${API}/wallets`, {
+  name: 'Demo Wallet',
+  address: 'demo-1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa'
+});
+
+// Get transactions
+const { data: transactions } = await axios.get(`${API}/wallets/${walletId}/transactions`);
+
+// Calculate tax (JSON)
+const report = await axios.post(`${API}/tax/calculate`, {
+  wallet_ids: [1, 3],
+  tax_year: 2025,
+  other_income: 500000
+});
+
+// Download PDF
+const response = await axios.post(`${API}/tax/export-pdf`, payload, { responseType: 'blob' });
+const url = window.URL.createObjectURL(new Blob([response.data]));
+const link = document.createElement('a');
+link.href = url;
+link.setAttribute('download', 'sars-crypto-tax-2025.pdf');
+document.body.appendChild(link);
+link.click();
+```
+
+## Technical Terms Explained Simply
+
+- **FIFO (First In, First Out)**: When you sell crypto, the system matches the sale to your oldest purchases first to calculate gain/loss accurately.
+- **Annual Exclusion**: SARS lets you ignore the first R40,000 of capital gains each year.
+- **Inclusion Rate**: 40% of your taxable crypto gain is added to your normal income and taxed at your personal rate (18–45%).
+- **Marginal Rate**: The tax percentage on your highest income bracket — this is what the crypto gain gets taxed at.

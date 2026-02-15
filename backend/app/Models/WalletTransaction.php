@@ -2,57 +2,32 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class WalletTransaction extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'wallet_id',
-        'type',
-        'amount',
-        'price_at_open',
-        'price_at_close',
-        'transaction_date'
+        'wallet_id', 'date', 'type', 'asset', 'quantity',
+        'price_per_unit_zar', 'total_value_zar', 'fees_zar',
+        'exchange', 'transaction_id', 'notes',
+        'acquired_asset', 'acquired_quantity'
     ];
 
     protected $casts = [
-        'transaction_date' => 'datetime'
-    ]; // Converts 'transaction_date' into `Carbon` instance for (for date manipulation)
+        'date' => 'datetime',
+        'quantity' => 'decimal:8',
+        'price_per_unit_zar' => 'decimal:2',
+        'total_value_zar' => 'decimal:2',
+        'fees_zar' => 'decimal:2',
+        'acquired_quantity' => 'decimal:8',
+    ];
 
-    public function wallet() {
+    public function wallet(): BelongsTo
+    {
         return $this->belongsTo(Wallet::class);
-    }
-
-    public function usdZarRates() {
-        return 15.85;
-    }
-
-    public function getZarValueBaseCostAttribute() {
-        if ($this->price_at_open) {
-            $usdValue = $this->amount * $this->price_at_open;
-
-            return $usdValue * $this->usdZarRates();
-        }
-
-        return 0;
-    }
-
-    public function getZarValueEarningAttribute() {
-        if ($this->price_at_close) {
-            $usdValue = $this->amount * $this->price_at_close;
-
-            return $usdValue * $this->usdZarRates();
-        }
-
-        return null;
-    }
-
-    public function getZarValueCapitalGainLossAttribute() {
-        if ($this->price_at_close) {
-            return $this->zar_value_earning - $this->zar_value_base_cost;
-        }
     }
 }

@@ -14,11 +14,21 @@ return new class extends Migration
         Schema::create('wallet_transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('wallet_id')->constrained()->onDelete('cascade');
-            $table->enum('type', ['buy', 'sell', 'transfer']);
-            $table->decimal('amount', 18, 8);
-            $table->decimal('price_at_open', 12, 2)->nullable();  // ZAR price when trade is made
-            $table->decimal('price_at_close', 12, 2)->nullable();  // ZAR price when trade is complete
-            $table->timestamp('transaction_date');
+            $table->dateTime('date');
+            $table->enum('type', ['buy', 'sell', 'trade']);
+            $table->string('asset');
+            $table->decimal('quantity', 18, 8);
+            $table->decimal('price_per_unit_zar', 18, 2)->nullable();
+            $table->decimal('total_value_zar', 18, 2);
+            $table->decimal('fees_zar', 18, 2);
+            $table->string('exchange');
+            $table->string('transaction_id')->unique();
+            $table->text('notes')->nullable();
+
+            // Trade support
+            $table->string('acquired_asset')->nullable();
+            $table->decimal('acquired_quantity', 18, 8)->nullable();
+
             $table->timestamps();
         });
     }
