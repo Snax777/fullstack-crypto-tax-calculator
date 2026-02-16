@@ -6,11 +6,12 @@ use App\Services\FIFOCalculatorService;
 use App\Services\PdfReportService;
 use App\Services\TaxCalculatorService;
 use Illuminate\Support\Facades\Route;
-crypto-wallet
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\WalletTransactionController;
-// use App\Http\Controllers\TaxReportController;
+use App\Http\Controllers\TaxReportController;
 use App\Http\Controllers\TaxController;
+use Illuminate\Http\Request;
+
 
 Route::apiResource('transactions', TransactionController::class);
 
@@ -29,7 +30,7 @@ Route::post('tax/preview', [TaxController::class, 'preview']);
 Route::prefix('tax')->group(function () {
     Route::get('/wallet/{wallet}/{year?}', [TaxReportController::class, 'calculateWalletTax']);
     Route::get('/wallet/{wallet}/pdf/{year?}', [TaxReportController::class, 'generateWalletPdf']);
-use Illuminate\Http\Request;
+});
 
 /*
 |--------------------------------------------------------------------------
