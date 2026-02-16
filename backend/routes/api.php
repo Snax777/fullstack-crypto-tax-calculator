@@ -21,16 +21,14 @@ Route::post('/transactions/upload', [TransactionUploadController::class, 'upload
 Route::apiResource('wallets', WalletController::class);
 Route::get('wallets/{wallet}/transactions', [WalletTransactionController::class, 'index']);
 
-<<<<<<< HEAD
 Route::post('tax/calculate', [TaxController::class, 'calculate']);
 Route::post('tax/export-pdf', [TaxController::class, 'exportPdf']);
 Route::post('tax/preview', [TaxController::class, 'preview']);
-=======
+
 // Tax report routes
 Route::prefix('tax')->group(function () {
     Route::get('/wallet/{wallet}/{year?}', [TaxReportController::class, 'calculateWalletTax']);
     Route::get('/wallet/{wallet}/pdf/{year?}', [TaxReportController::class, 'generateWalletPdf']);
-=======
 use Illuminate\Http\Request;
 
 /*
@@ -84,7 +82,7 @@ Route::post('/calculate', function (
 });
 
 /**
- * Simple calculation endpoint 
+ * Simple calculation endpoint
  */
 Route::post('/calculate/simple', function (
   Request $request,
@@ -141,4 +139,3 @@ Route::post('/calculate/download-pdf', function (
     ], 400);
   }
 });
->>>>>>> 0554d3ce71b1fc7c754fa8a506fe50175d27dbe8
